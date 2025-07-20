@@ -29,7 +29,9 @@ interface Task{
 interface User{
 
     id: String,
-    name: String
+    name: String,
+    surName: String,
+    photoUrl: String,
 
 }
 
@@ -54,7 +56,9 @@ const typeDefs = gql`
     type User{
 
         id: String!
-        name: String!        
+        name: String!       
+        surName: String,
+        photoUrl: String, 
 
     }
 
@@ -80,10 +84,10 @@ const typeDefs = gql`
     type Mutation{
 
         createTask(title: String!, description: String, ownerId: String!, type: String!): Task
-        createUser(name: String!): User
+        createUser(name: String!, surName: String, photoUrl: String): User
 
         updateTask(id: String!, title: String, description: String, ownerId: String, type: String, status: String): Task
-        updateUser(id: String!, name: String): User
+        updateUser(id: String!, name: String,  surName: String, photoUrl: String): User
 
         deleteTask(id: String!): Boolean
         deleteUser(id: String!): Boolean
@@ -157,12 +161,14 @@ const resolvers = {
 
         },
 
-        createUser: (_, { name }) => {
+        createUser: (_, { name, surName, photoUrl }) => {
 
             const user = {
 
                 id: randomUUID(),
                 name: name,
+                surName: surName, 
+                photoUrl: photoUrl
 
             }
 
@@ -207,12 +213,14 @@ const resolvers = {
 
         },
 
-        updateUser: (_, { id, name }) => {
+        updateUser: (_, { id, name, surName, photoUrl }) => {
 
             const user = users.find(user => user.id === id); 
 
             user.id = user.id,
-            user.name= name ? name : user.name
+            user.name = name ? name : user.name
+            user.surName = surName ? surName : user.surName
+            user.photoUrl = photoUrl ? photoUrl : user.photoUrl
 
             return user
 
