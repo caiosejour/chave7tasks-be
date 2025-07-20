@@ -14,18 +14,6 @@ function returnToday(){
 
 }
 
-interface Task{
-
-    id: String,
-    title: String,
-    description: String,
-    ownerId: String,
-    type: String,
-    status: String,
-    createdAt: String
-
-}
-
 interface User{
 
     id: String,
@@ -35,23 +23,23 @@ interface User{
 
 }
 
+interface Task{
+
+    id: String,
+    title: String,
+    description: String,
+    owner: User,
+    type: String,
+    status: String,
+    createdAt: String
+
+}
+
 let tasks: Task[] = []
 
 let users: User[] = []
 
 const typeDefs = gql`
-
-    type Task{
-
-        id: String!
-        title: String!
-        description: String
-        ownerId: String!
-        type: String!
-        status: String!
-        createdAt: String!
-
-    }
 
     type User{
 
@@ -59,6 +47,18 @@ const typeDefs = gql`
         name: String!       
         surName: String,
         photoUrl: String, 
+
+    }
+
+    type Task{
+
+        id: String!
+        title: String!
+        description: String
+        owner: User!
+        type: String!
+        status: String!
+        createdAt: String!
 
     }
 
@@ -143,12 +143,14 @@ const resolvers = {
 
         createTask: (_, { title, description, ownerId, type }) => {
 
+            const user = users.find(user => user.id === ownerId) 
+
             const task = {
 
                 id: randomUUID(),
                 title: title,
                 description: description ? description : "-",
-                ownerId: ownerId,
+                owner: user,
                 type: type,
                 status: "Pendente",
                 createdAt: returnToday()
@@ -202,10 +204,10 @@ const resolvers = {
 
             const task = tasks.find(task => task.id === id); 
 
-            task.id = task.id,
+            task.id = task.id
             task.title = title ? title : task.title
-            task.description= description ? description : task.description
-            task.ownerId= ownerId ? ownerId : task.ownerId
+            task.description = description ? description : task.description
+            task.owner= ownerId ? users.find(user => user.id === ownerId) : task.owner
             task.type= type ? type : task.type
             task.status= status ? status : task.status
 
