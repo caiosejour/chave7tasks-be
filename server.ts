@@ -1,8 +1,22 @@
 import {gql, ApolloServer} from 'apollo-server'
+import {randomUUID} from 'node:crypto'
+
+function returnToday(){
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const date = String(today.getDate()).padStart(2, '0');
+
+  return `${date}/${month}/${year}`;
+
+}
 
 interface Task{
 
-    id: string,
+    id: String,
     title: String,
     description: String,
     ownerId: String,
@@ -14,7 +28,7 @@ interface Task{
 
 interface User{
 
-    id: string,
+    id: String,
     name: String
 
 }
@@ -27,10 +41,10 @@ const typeDefs = gql`
 
     type Task{
 
-        id: ID!
+        id: String!
         title: String!
-        description: String!
-        ownerId: Int!
+        description: String
+        ownerId: String!
         type: String!
         status: String!
         createdAt: String!
@@ -39,30 +53,40 @@ const typeDefs = gql`
 
     type User{
 
-        id: ID!
+        id: String!
         name: String!        
+
+    }
+
+    type Stats{
+
+        allTasks: String!
+        completedTasks: String!
+        pendingTasks: String!
+        conclusionRate: String!
 
     }
 
     type Query{
 
         tasks: [Task]
-        task(id: ID!): Task
+        task(id: String!): Task
         users: [User]
-        user(id: ID!): User
+        user(id: String!): User
+        stats: Stats
 
     }
 
     type Mutation{
 
-        createTask(id: ID!, title: String!, description: String!, ownerId: Int!, type: String!, status: String!, createdAt: String!): Task
-        createUser(id: ID!, name: String!): User
+        createTask(title: String!, description: String, ownerId: String!, type: String!): Task
+        createUser(name: String!): User
 
-        updateTask(id: ID!, title: String, description: String, ownerId: Int, type: String, status: String, createdAt: String): Task
-        updateUser(id: ID!, name: String): User
+        updateTask(id: String!, title: String, description: String, ownerId: String, type: String, status: String): Task
+        updateUser(id: String!, name: String): User
 
-        deleteTask(id: ID!): Boolean
-        deleteUser(id: ID!): Boolean
+        deleteTask(id: String!): Boolean
+        deleteUser(id: String!): Boolean
 
     }
 
@@ -94,23 +118,36 @@ const resolvers = {
 
             return users.find(user => user.id === id) 
 
+        },
+
+        stats: () => {
+
+            return {
+
+                "allTasks": tasks.length,
+                "completedTasks": tasks.filter(task => task.status === 'Concluído').length,
+                "pendingTasks": (tasks.length - tasks.filter(task => task.status === 'Concluído').length),
+                "conclusionRate": (tasks.length == 0) ? "0%" : ((tasks.filter(task => task.status === 'Concluído').length/tasks.length)*100).toFixed(0) + "%"
+
+            }
+
         }
 
     },
 
     Mutation:{
 
-        createTask: (_, { id, title, description, ownerId, type, status, createdAt }) => {
+        createTask: (_, { title, description, ownerId, type }) => {
 
             const task = {
 
-                id: id,
+                id: randomUUID(),
                 title: title,
-                description: description,
+                description: description ? description : "-",
                 ownerId: ownerId,
                 type: type,
-                status: status,
-                createdAt: createdAt
+                status: "Pendente",
+                createdAt: returnToday()
 
             }
 
@@ -120,11 +157,11 @@ const resolvers = {
 
         },
 
-        createUser: (_, { id, name}) => {
+        createUser: (_, { name }) => {
 
             const user = {
 
-                id: id,
+                id: randomUUID(),
                 name: name,
 
             }
@@ -155,17 +192,16 @@ const resolvers = {
 
         },
 
-        updateTask: (_, { id, title, description, ownerId, type, status, createdAt }) => {
+        updateTask: (_, { id, title, description, ownerId, type, status }) => {
 
             const task = tasks.find(task => task.id === id); 
 
             task.id = task.id,
-            task.title= title ? title : task.title
+            task.title = title ? title : task.title
             task.description= description ? description : task.description
             task.ownerId= ownerId ? ownerId : task.ownerId
             task.type= type ? type : task.type
             task.status= status ? status : task.status
-            task.createdAt= createdAt ? createdAt : task.createdAt
 
             return task
 
