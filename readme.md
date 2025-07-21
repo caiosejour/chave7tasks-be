@@ -4,22 +4,22 @@
 
 ## Como rodar localmente: 
 
-    ### Back-end: 
+### Back-end: 
         
-    ```bash git clone https://github.com/caiosejour/chave7tasks-be.git
+```bash git clone https://github.com/caiosejour/chave7tasks-be.git
 
-    ```bash cd chave7tasks-be
+```bash cd chave7tasks-be
 
-    ```bash npm install
+```bash npm install
 
-    ```bash npm run dev
+```bash npm run dev
 
-    ### Front-end: 
-        
-    ```bash git clone https://github.com/caiosejour/chave7tasks-fe.git
+### Front-end: 
+    
+```bash git clone https://github.com/caiosejour/chave7tasks-fe.git
 
-    ```bash cd chave7tasks-fe
+```bash cd chave7tasks-fe
 
-    ```bash npm install
+```bash npm install
 
-    ```bash npm run dev
+```bash npm run dev
