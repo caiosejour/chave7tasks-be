@@ -416,7 +416,7 @@ const server = new ApolloServer({
 
 })
 
-server.listen().then(({ url }) => {
+server.listen({ port: 3000 }).then(({ url }) => {
 
     console.log('Servidor rodando em: ' + url)
 
