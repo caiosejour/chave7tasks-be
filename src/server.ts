@@ -247,13 +247,14 @@ const resolvers = {
             const [countAllTasks] = await connection('tasks').count()
             const [countAllConcludedTasks] = await connection('tasks').where('status','Concluído').count()
             const [countAllPendingTasks] = await connection('tasks').where('status','Pendente').count()
+            const conclusionRate = (countAllTasks['count(*)'] == 0) ? "0%" : ((parseInt((countAllConcludedTasks['count(*)']))/parseInt(countAllTasks['count(*)']))*100).toFixed(0) + "%"
 
             return {
 
                 "allTasks": countAllTasks['count(*)'],
                 "completedTasks": countAllConcludedTasks['count(*)'],
                 "pendingTasks": countAllPendingTasks['count(*)'],
-                "conclusionRate": (countAllTasks['count(*)'] == 0) ? "0%" : ((countAllConcludedTasks['count(*)'])/countAllTasks['count(*)']).toFixed(0) + "%"
+                "conclusionRate": conclusionRate
 
             }
 
