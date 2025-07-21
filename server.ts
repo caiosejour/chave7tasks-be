@@ -37,7 +37,14 @@ interface Task{
 
 let tasks: Task[] = []
 
-let users: User[] = []
+let users: User[] = [{
+
+    "id": "5fb9a07c-e28c-44a0-a6e6-034a025ff6f0",
+    "name": "Caio",
+    "surName": "Séjour",
+    "photoUrl": "http://localhost:3000/fotoCaio.jpg"
+
+}]
 
 const typeDefs = gql`
 
@@ -62,6 +69,13 @@ const typeDefs = gql`
 
     }
 
+    type Tasks{
+
+        tasks: [Task]!
+        totalFiltered: Int!    
+
+    }
+
     type Stats{
 
         allTasks: String!
@@ -73,7 +87,7 @@ const typeDefs = gql`
 
     type Query{
 
-        tasks: [Task]
+        tasks(filter: String!, offset: Int, limit: Int): Tasks
         task(id: String!): Task
         users: [User]
         user(id: String!): User
@@ -100,9 +114,28 @@ const resolvers = {
 
     Query:{
 
-        tasks: () => {
+        tasks: (_, { filter, offset, limit }) => {
 
-            return tasks
+            if(filter === "All"){
+
+                return {
+
+                    "tasks": tasks.slice(offset, (offset + limit)),
+                    "totalFiltered": tasks.length
+                }
+
+            }else{
+
+                const filteredAndSlicedTasks = tasks.filter((task) => task.type === filter).slice(offset, (offset + limit))
+                const totalFilteredTasks = tasks.filter((task) => task.type === filter).length
+
+                return {
+                    
+                    "tasks": filteredAndSlicedTasks,
+                    "totalFiltered": totalFilteredTasks
+                }
+
+            }
 
         },
 
