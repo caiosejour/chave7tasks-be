@@ -9,6 +9,7 @@
   "scripts": {
     "start": "tsnd --respawn --transpile-only ./src/server.ts",
     "test": "npx jest",
+    "build": "tsc",
     "dev": "tsnd --respawn --transpile-only ./src/server.ts"
   },
   "devDependencies": {
